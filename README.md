@@ -50,6 +50,8 @@
 
 ## Narrador y audiolibros
 
+- Motor de voz (Configuración → Narrador): **Automático** usa voces neuronales de Microsoft por internet y, si el servicio falla o no hay conexión, cambia solo a las **voces locales de Windows** (Raúl, Sabina…); también puedes fijar uno u otro.
+
 - Modo **Escuchar** en el lector: voces neuronales de Microsoft Edge (gratis, requiere internet) leen el libro con resaltado de la palabra en curso; el progreso de lectura avanza con el audio.
 - Botón 🎙 para elegir narrador: voces curadas en español (México, España, Argentina, Chile, Colombia, EE. UU., Perú, Venezuela) e inglés, con descripción del estilo, botón **Probar** (lee un fragmento del propio libro), ritmo y tono, y opción de aplicar al libro o a todos. La app sugiere una voz según el universo/género del libro y el idioma detectado.
 - Velocidad 0.8×–1.5×; el audio generado se guarda en caché (`%APPDATA%/xook/data/audio`).
@@ -93,3 +95,13 @@ El instalador queda en `dist/` (`Xook-1.0.0-setup.exe`, NSIS, sin firma digital:
 ## Datos
 
 Biblioteca y texto extraído se guardan en `%APPDATA%/xook/data/` (o en la carpeta que elijas en Ajustes → Carpeta de datos).
+
+## Publicación y actualizaciones
+
+- Cada etiqueta `vX.Y.Z` en GitHub compila el instalador y crea la *Release* automáticamente (`.github/workflows/release.yml`).
+- La app comprueba actualizaciones al arrancar (electron-updater, GitHub Releases) y las instala al cerrar.
+- Para publicar una versión: sube el número en `package.json`, `git commit`, `git tag v1.0.1`, `git push --tags`.
+
+## Licencia
+
+Xook es software libre bajo la licencia **GPL-3.0**: puedes usarlo, estudiarlo, modificarlo y redistribuirlo, siempre que las versiones derivadas se publiquen con la misma licencia. Es gratis; si te sirve, considera apoyar el proyecto con una donación (botón «Apoyar el proyecto» en Configuración → Acerca de).
