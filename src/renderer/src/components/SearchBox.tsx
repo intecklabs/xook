@@ -36,30 +36,48 @@ function highlight(text: string, q: string): React.ReactNode {
   return parts
 }
 
+type Scope = 'all' | 'title' | 'author' | 'text'
+const SCOPES: { id: Scope; label: string }[] = [
+  { id: 'all', label: 'Todo' },
+  { id: 'title', label: 'Títulos' },
+  { id: 'author', label: 'Autores' },
+  { id: 'text', label: 'Texto' }
+]
+
 export default function SearchBox({ universeId, placeholder, onOpen }: Props): React.JSX.Element {
   const [q, setQ] = useState('')
+  const [scope, setScope] = useState<Scope>('all')
   const [open, setOpen] = useState(false)
   const [result, setResult] = useState<{ key: string; books: BookRow[]; hits: SearchHit[] } | null>(
     null
   )
   const boxRef = useRef<HTMLDivElement>(null)
   const debounced = useDebounced(q, 220)
-  const key = `${debounced.trim()}|${universeId ?? ''}`
+  const key = `${debounced.trim()}|${universeId ?? ''}|${scope}`
 
   useEffect(() => {
     const nq = debounced.trim()
     if (nq.length < 2) return
     let cancelled = false
+    const wantBooks = scope !== 'text'
+    const wantText = scope === 'all' || scope === 'text'
     void Promise.all([
-      window.api.listBooks({ q: nq, universeId: universeId ?? undefined, limit: 8 }),
-      window.api.searchText(nq, universeId ?? null)
+      wantBooks
+        ? window.api.listBooks({
+            q: nq,
+            field: scope === 'all' ? 'all' : scope,
+            universeId: universeId ?? undefined,
+            limit: scope === 'all' ? 8 : 24
+          })
+        : Promise.resolve({ rows: [] as BookRow[], total: 0 }),
+      wantText ? window.api.searchText(nq, universeId ?? null) : Promise.resolve([] as SearchHit[])
     ]).then(([b, h]) => {
       if (!cancelled) setResult({ key, books: b.rows, hits: h })
     })
     return () => {
       cancelled = true
     }
-  }, [debounced, universeId, key])
+  }, [debounced, universeId, key, scope])
 
   useEffect(() => {
     const onDown = (e: MouseEvent): void => {
@@ -70,7 +88,7 @@ export default function SearchBox({ universeId, placeholder, onOpen }: Props): R
   }, [])
 
   const wanted = q.trim()
-  const ready = wanted.length >= 2 && result?.key === `${wanted}|${universeId ?? ''}`
+  const ready = wanted.length >= 2 && result?.key === `${wanted}|${universeId ?? ''}|${scope}`
   const searching = wanted.length >= 2 && !ready
   const books = ready ? result!.books : []
   const hits = ready ? result!.hits : []
@@ -120,6 +138,25 @@ export default function SearchBox({ universeId, placeholder, onOpen }: Props): R
       </div>
       {show && (
         <div className="searchbox-results">
+          <div className="sr-scope">
+            <div className="seg tiny">
+              {SCOPES.map((sc) => (
+                <button
+                  key={sc.id}
+                  className={scope === sc.id ? 'active' : ''}
+                  onMouseDown={(e) => e.preventDefault()}
+                  onClick={() => setScope(sc.id)}
+                >
+                  {sc.label}
+                </button>
+              ))}
+            </div>
+            <span className="hint">
+              {scope === 'text'
+                ? 'Busca dentro del contenido de los libros'
+                : 'Enter abre el primer resultado'}
+            </span>
+          </div>
           {books.length > 0 && (
             <div className="sr-group">
               <div className="sr-title">Libros</div>

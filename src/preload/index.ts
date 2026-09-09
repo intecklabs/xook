@@ -139,6 +139,7 @@ export interface UniverseRow {
 
 export interface ListParams {
   q?: string
+  field?: 'all' | 'title' | 'author'
   sort?: 'recent' | 'added' | 'title' | 'author' | 'progress'
   offset?: number
   limit?: number

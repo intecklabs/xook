@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef } from 'react'
 import type { BookRow } from '../../../preload'
-import CoverImage from './CoverImage'
+import Book3D from './Book3D'
 import Icon from './Icon'
 
 interface Props {
@@ -89,7 +89,7 @@ export default function CoverFlow({
         }}
         title={b ? (offset === 0 ? 'Abrir' : b.title) : ''}
       >
-        {b && <CoverImage book={b} lazy={false} />}
+        {b && <Book3D book={b} lazy={false} />}
       </div>
     )
   }

@@ -48,6 +48,7 @@ export interface UniverseRow {
 
 export interface ListParams {
   q?: string
+  field?: 'all' | 'title' | 'author'
   sort?: 'recent' | 'added' | 'title' | 'author' | 'progress'
   offset?: number
   limit?: number
@@ -283,9 +284,18 @@ export function listBooks(p: ListParams): { rows: BookRow[]; total: number } {
   const where: string[] = []
   const args: SQLInputValue[] = []
   if (p.q && p.q.trim()) {
+    const field = p.field ?? 'all'
     for (const term of normalize(p.q).split(' ').filter(Boolean)) {
-      where.push('(titleNorm LIKE ? OR authorNorm LIKE ?)')
-      args.push(`%${term}%`, `%${term}%`)
+      if (field === 'title') {
+        where.push('titleNorm LIKE ?')
+        args.push(`%${term}%`)
+      } else if (field === 'author') {
+        where.push('authorNorm LIKE ?')
+        args.push(`%${term}%`)
+      } else {
+        where.push('(titleNorm LIKE ? OR authorNorm LIKE ?)')
+        args.push(`%${term}%`, `%${term}%`)
+      }
     }
   }
   if (p.universeId) {

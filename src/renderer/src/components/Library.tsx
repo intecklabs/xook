@@ -4,6 +4,7 @@ import { useStore } from '../store'
 import { estimateMinutes } from '../lib/text'
 import { useAllAnnotations, usePagedBooks, useStats } from '../hooks/useLibrary'
 import CoverFlow from './CoverFlow'
+import ShelfView from './ShelfView'
 import CoverPicker from './CoverPicker'
 import CoverImage from './CoverImage'
 import UniversesView from './UniversesView'
@@ -12,7 +13,7 @@ import SendDialog from './SendDialog'
 import ConvertDialog from './ConvertDialog'
 import Icon from './Icon'
 
-type Tab = 'flow' | 'universes' | 'list' | 'notes'
+type Tab = 'flow' | 'shelf' | 'universes' | 'list' | 'notes'
 type Sort = 'recent' | 'added' | 'title' | 'author' | 'progress'
 
 const SORTS: { id: Sort; label: string }[] = [
@@ -114,6 +115,9 @@ export default function Library(): React.JSX.Element {
             <button className={tab === 'flow' ? 'active' : ''} onClick={() => setTab('flow')}>
               Portadas
             </button>
+            <button className={tab === 'shelf' ? 'active' : ''} onClick={() => setTab('shelf')}>
+              Estantería
+            </button>
             <button
               className={tab === 'universes' ? 'active' : ''}
               onClick={() => setTab('universes')}
@@ -127,7 +131,7 @@ export default function Library(): React.JSX.Element {
               Anotaciones
             </button>
           </div>
-          {(tab === 'flow' || tab === 'list') && paged.total > 1 && (
+          {(tab === 'flow' || tab === 'shelf' || tab === 'list') && paged.total > 1 && (
             <select
               className="lib-sort"
               value={sort}
@@ -154,6 +158,14 @@ export default function Library(): React.JSX.Element {
               llegar a 400-500 ppm manteniendo la comprensión.
             </p>
           </div>
+        ) : tab === 'shelf' ? (
+          <ShelfView
+            total={paged.total}
+            get={paged.get}
+            ensure={paged.ensure}
+            reset={paged.reset}
+            onOpen={(b) => void openBook(b.id)}
+          />
         ) : tab === 'flow' ? (
           <>
             <CoverFlow
