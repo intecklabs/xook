@@ -35,21 +35,26 @@ export function usePagedBooks(params: Omit<ListParams, 'offset' | 'limit'>): {
 } {
   const version = useStore((s) => s.libraryVersion)
   const key = JSON.stringify(params) + '#' + version
-  const pages = useRef(new Map<number, BookRow[]>())
-  const inflight = useRef(new Set<number>())
+  // Pages are cached per key (params + library version), so a request started for the current
+  // key can never be thrown away by a reset that runs a moment later.
+  const store = useRef(new Map<string, { pages: Map<number, BookRow[]>; inflight: Set<number> }>())
   const [total, setTotal] = useState(0)
   const [tick, setTick] = useState(0)
-  const keyRef = useRef(key)
 
   const load = useCallback(
     (page: number) => {
-      if (pages.current.has(page) || inflight.current.has(page)) return
-      inflight.current.add(page)
-      const k = keyRef.current
+      let b = store.current.get(key)
+      if (!b) {
+        b = { pages: new Map(), inflight: new Set() }
+        store.current.set(key, b)
+      }
+      const bucket = b
+      if (bucket.pages.has(page) || bucket.inflight.has(page)) return
+      bucket.inflight.add(page)
       void window.api.listBooks({ ...params, offset: page * PAGE, limit: PAGE }).then((r) => {
-        if (keyRef.current !== k) return
-        inflight.current.delete(page)
-        pages.current.set(page, r.rows)
+        bucket.inflight.delete(page)
+        bucket.pages.set(page, r.rows)
+        if (store.current.get(key) !== bucket) return
         setTotal(r.total)
         setTick((t) => t + 1)
       })
@@ -58,18 +63,16 @@ export function usePagedBooks(params: Omit<ListParams, 'offset' | 'limit'>): {
     [key]
   )
 
-  // Params or library changed: drop cached pages and refetch the first one
+  // Params or library changed: forget other keys and fetch the first page of this one
   useEffect(() => {
-    keyRef.current = key
-    pages.current.clear()
-    inflight.current.clear()
+    for (const k of store.current.keys()) if (k !== key) store.current.delete(k)
     load(0)
   }, [key, load])
 
   const get = useCallback(
     (index: number): BookRow | undefined => {
       const page = Math.floor(index / PAGE)
-      return pages.current.get(page)?.[index - page * PAGE]
+      return store.current.get(key)?.pages.get(page)?.[index - page * PAGE]
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [tick, key]

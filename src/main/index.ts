@@ -78,6 +78,12 @@ function createWindow(): BrowserWindow {
 
   mainWindow.on('ready-to-show', () => mainWindow.show())
 
+  // Surface renderer errors in the main log (dev console / support)
+  mainWindow.webContents.on('console-message', (e) => {
+    if (e.level === 'error')
+      console.error(`[renderer] ${e.message} (${e.sourceId}:${e.lineNumber})`)
+  })
+
   // Pinch/ctrl+wheel is handled by the renderer to resize text, not the page
   mainWindow.webContents.setVisualZoomLevelLimits(1, 1)
   mainWindow.webContents.on('zoom-changed', (e) => e.preventDefault())

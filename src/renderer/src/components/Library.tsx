@@ -55,214 +55,216 @@ export default function Library(): React.JSX.Element {
 
   return (
     <div className="screen library" onMouseDown={() => setMenuFor(null)}>
-      <header className="lib-header">
-        <div>
-          <h1 className="brand">Xook</h1>
-          <p className="muted">
-            Lee más rápido, entiende más. <span className="brand-note">Xook: «leer» en maya.</span>
-          </p>
-        </div>
-        <div className="lib-actions">
-          <button
-            className="ghost icon-btn"
-            title={isDark ? 'Modo claro' : 'Modo oscuro'}
-            onClick={() => updateSettings({ theme: isDark ? 'light' : 'dark' })}
-          >
-            {isDark ? <Icon name="sun" size={18} /> : <Icon name="moon" size={18} />}
-          </button>
-          <button className="ghost icon-btn" title="Configuración" onClick={() => openSettings()}>
-            <Icon name="sliders" size={18} />
-          </button>
-          <button
-            className="ghost"
-            onClick={() => void importPick('folder')}
-            title="Importa todos los PDF y EPUB de una carpeta (y subcarpetas)"
-          >
-            <Icon name="folder" /> Importar carpeta
-          </button>
-          <button className="primary" onClick={() => void importPick('files')}>
-            <Icon name="plus" /> Abrir libros
-          </button>
-        </div>
-      </header>
+      <div className="lib-content">
+        <header className="lib-header">
+          <div>
+            <h1 className="brand">Xook</h1>
+            <p className="muted">
+              Lee más rápido, entiende más.{' '}
+              <span className="brand-note">Xook: «leer» en maya.</span>
+            </p>
+          </div>
+          <div className="lib-actions">
+            <button
+              className="ghost icon-btn"
+              title={isDark ? 'Modo claro' : 'Modo oscuro'}
+              onClick={() => updateSettings({ theme: isDark ? 'light' : 'dark' })}
+            >
+              {isDark ? <Icon name="sun" size={18} /> : <Icon name="moon" size={18} />}
+            </button>
+            <button className="ghost icon-btn" title="Configuración" onClick={() => openSettings()}>
+              <Icon name="sliders" size={18} />
+            </button>
+            <button
+              className="ghost"
+              onClick={() => void importPick('folder')}
+              title="Importa todos los PDF y EPUB de una carpeta (y subcarpetas)"
+            >
+              <Icon name="folder" /> Importar carpeta
+            </button>
+            <button className="primary" onClick={() => void importPick('files')}>
+              <Icon name="plus" /> Abrir libros
+            </button>
+          </div>
+        </header>
 
-      <SearchBox onOpen={openAt} />
+        <SearchBox onOpen={openAt} />
 
-      <section className="stats-row">
-        <div className="stat">
-          <span className="stat-value">{stats.wpm ?? '—'}</span>
-          <span className="stat-label">ppm promedio</span>
-        </div>
-        <div className="stat">
-          <span className="stat-value">{stats.words.toLocaleString('es')}</span>
-          <span className="stat-label">palabras leídas</span>
-        </div>
-        <div className="stat">
-          <span className="stat-value">{stats.books.toLocaleString('es')}</span>
-          <span className="stat-label">libros</span>
-        </div>
-        <div className="stat">
-          <span className="stat-value">{stats.notes.toLocaleString('es')}</span>
-          <span className="stat-label">subrayados y notas</span>
-        </div>
-      </section>
+        <section className="stats-row">
+          <div className="stat">
+            <span className="stat-value">{stats.wpm ?? '—'}</span>
+            <span className="stat-label">ppm promedio</span>
+          </div>
+          <div className="stat">
+            <span className="stat-value">{stats.words.toLocaleString('es')}</span>
+            <span className="stat-label">palabras leídas</span>
+          </div>
+          <div className="stat">
+            <span className="stat-value">{stats.books.toLocaleString('es')}</span>
+            <span className="stat-label">libros</span>
+          </div>
+          <div className="stat">
+            <span className="stat-value">{stats.notes.toLocaleString('es')}</span>
+            <span className="stat-label">subrayados y notas</span>
+          </div>
+        </section>
 
-      <div className="lib-toolbar">
-        <div className="lib-tabs seg">
-          <button className={tab === 'flow' ? 'active' : ''} onClick={() => setTab('flow')}>
-            Portadas
-          </button>
-          <button
-            className={tab === 'universes' ? 'active' : ''}
-            onClick={() => setTab('universes')}
-          >
-            Universos
-          </button>
-          <button className={tab === 'list' ? 'active' : ''} onClick={() => setTab('list')}>
-            Lista
-          </button>
-          <button className={tab === 'notes' ? 'active' : ''} onClick={() => setTab('notes')}>
-            Anotaciones
-          </button>
+        <div className="lib-toolbar">
+          <div className="lib-tabs seg">
+            <button className={tab === 'flow' ? 'active' : ''} onClick={() => setTab('flow')}>
+              Portadas
+            </button>
+            <button
+              className={tab === 'universes' ? 'active' : ''}
+              onClick={() => setTab('universes')}
+            >
+              Universos
+            </button>
+            <button className={tab === 'list' ? 'active' : ''} onClick={() => setTab('list')}>
+              Lista
+            </button>
+            <button className={tab === 'notes' ? 'active' : ''} onClick={() => setTab('notes')}>
+              Anotaciones
+            </button>
+          </div>
+          {(tab === 'flow' || tab === 'list') && paged.total > 1 && (
+            <select
+              className="lib-sort"
+              value={sort}
+              onChange={(e) => setSort(e.target.value as Sort)}
+            >
+              {SORTS.map((s) => (
+                <option key={s.id} value={s.id}>
+                  {s.label}
+                </option>
+              ))}
+            </select>
+          )}
         </div>
-        {(tab === 'flow' || tab === 'list') && paged.total > 1 && (
-          <select
-            className="lib-sort"
-            value={sort}
-            onChange={(e) => setSort(e.target.value as Sort)}
-          >
-            {SORTS.map((s) => (
-              <option key={s.id} value={s.id}>
-                {s.label}
-              </option>
-            ))}
-          </select>
-        )}
-      </div>
 
-      {tab === 'notes' ? (
-        <AnnotationsOverview onOpen={openAt} />
-      ) : tab === 'universes' ? (
-        <UniversesView />
-      ) : paged.total === 0 ? (
-        <div className="empty">
-          <p>Todavía no tienes libros. Abre un PDF o EPUB, o importa una carpeta completa.</p>
-          <p className="muted small">
-            Consejo: un lector promedio va a 200-250 ppm. Con entrenamiento constante es realista
-            llegar a 400-500 ppm manteniendo la comprensión.
-          </p>
-        </div>
-      ) : tab === 'flow' ? (
-        <>
-          <CoverFlow
+        {tab === 'notes' ? (
+          <AnnotationsOverview onOpen={openAt} />
+        ) : tab === 'universes' ? (
+          <UniversesView />
+        ) : paged.total === 0 ? (
+          <div className="empty">
+            <p>Todavía no tienes libros. Abre un PDF o EPUB, o importa una carpeta completa.</p>
+            <p className="muted small">
+              Consejo: un lector promedio va a 200-250 ppm. Con entrenamiento constante es realista
+              llegar a 400-500 ppm manteniendo la comprensión.
+            </p>
+          </div>
+        ) : tab === 'flow' ? (
+          <>
+            <CoverFlow
+              total={paged.total}
+              get={paged.get}
+              ensure={paged.ensure}
+              index={index}
+              onIndexChange={setIndex}
+              onOpen={(b) => void openBook(b.id)}
+            />
+            {selected && (
+              <BookDetails
+                book={selected}
+                wpm={selected.avgWpm ?? settings.wpm}
+                onOpen={() => void openBook(selected.id)}
+                onCover={() => setPickerFor(selected)}
+                onSend={() => setSendFor(selected)}
+                onConvert={() => setConvertFor(selected)}
+                onRemove={() => remove(selected)}
+              />
+            )}
+          </>
+        ) : (
+          <VirtualList
             total={paged.total}
             get={paged.get}
             ensure={paged.ensure}
-            index={index}
-            onIndexChange={setIndex}
-            onOpen={(b) => void openBook(b.id)}
-          />
-          {selected && (
-            <BookDetails
-              book={selected}
-              wpm={selected.avgWpm ?? settings.wpm}
-              onOpen={() => void openBook(selected.id)}
-              onCover={() => setPickerFor(selected)}
-              onSend={() => setSendFor(selected)}
-              onConvert={() => setConvertFor(selected)}
-              onRemove={() => remove(selected)}
-            />
-          )}
-        </>
-      ) : (
-        <VirtualList
-          total={paged.total}
-          get={paged.get}
-          ensure={paged.ensure}
-          reset={paged.reset}
-          render={(b, i) => {
-            const pct = Math.round((b.position / Math.max(b.totalWords, 1)) * 100)
-            const wpm = b.avgWpm ?? settings.wpm
-            const left = estimateMinutes(b.totalWords - b.position, wpm)
-            return (
-              <div
-                className="book"
-                onClick={() => {
-                  setIndex(i)
-                  void openBook(b.id)
-                }}
-              >
-                <div className="book-thumb">
-                  <CoverImage book={b} />
-                </div>
-                <div className="book-info">
-                  <div className="book-title">{b.title}</div>
-                  <div className="muted small">
-                    {b.author ? `${b.author} · ` : ''}
-                    {b.format.toUpperCase()} · {b.totalWords.toLocaleString('es')} palabras
-                    {b.hasText ? '' : ' (aprox.)'} · ~{left} min
-                    {b.annotationCount ? ` · ${b.annotationCount} anotaciones` : ''}
+            reset={paged.reset}
+            render={(b, i) => {
+              const pct = Math.round((b.position / Math.max(b.totalWords, 1)) * 100)
+              const wpm = b.avgWpm ?? settings.wpm
+              const left = estimateMinutes(b.totalWords - b.position, wpm)
+              return (
+                <div
+                  className="book"
+                  onClick={() => {
+                    setIndex(i)
+                    void openBook(b.id)
+                  }}
+                >
+                  <div className="book-thumb">
+                    <CoverImage book={b} />
                   </div>
-                  <div className="bar thin">
-                    <div className="bar-fill" style={{ width: `${pct}%` }} />
-                  </div>
-                </div>
-                <div className="book-pct">{pct}%</div>
-                <div className="book-menu-wrap" onMouseDown={(e) => e.stopPropagation()}>
-                  <button
-                    className="icon"
-                    title="Más acciones"
-                    onClick={(e) => {
-                      e.stopPropagation()
-                      setMenuFor(menuFor === b.id ? null : b.id)
-                    }}
-                  >
-                    <Icon name="more" />
-                  </button>
-                  {menuFor === b.id && (
-                    <div className="book-menu" onClick={(e) => e.stopPropagation()}>
-                      <button
-                        onClick={() => {
-                          setMenuFor(null)
-                          setSendFor(b)
-                        }}
-                      >
-                        <Icon name="mail" /> Enviar a dispositivo
-                      </button>
-                      <button
-                        onClick={() => {
-                          setMenuFor(null)
-                          setConvertFor(b)
-                        }}
-                      >
-                        <Icon name="convert" /> Convertir formato
-                      </button>
-                      <button
-                        onClick={() => {
-                          setMenuFor(null)
-                          setPickerFor(b)
-                        }}
-                      >
-                        <Icon name="image" /> Cambiar portada
-                      </button>
-                      <button
-                        className="danger"
-                        onClick={() => {
-                          setMenuFor(null)
-                          remove(b)
-                        }}
-                      >
-                        × Quitar
-                      </button>
+                  <div className="book-info">
+                    <div className="book-title">{b.title}</div>
+                    <div className="muted small">
+                      {b.author ? `${b.author} · ` : ''}
+                      {b.format.toUpperCase()} · {b.totalWords.toLocaleString('es')} palabras
+                      {b.hasText ? '' : ' (aprox.)'} · ~{left} min
+                      {b.annotationCount ? ` · ${b.annotationCount} anotaciones` : ''}
                     </div>
-                  )}
+                    <div className="bar thin">
+                      <div className="bar-fill" style={{ width: `${pct}%` }} />
+                    </div>
+                  </div>
+                  <div className="book-pct">{pct}%</div>
+                  <div className="book-menu-wrap" onMouseDown={(e) => e.stopPropagation()}>
+                    <button
+                      className="icon"
+                      title="Más acciones"
+                      onClick={(e) => {
+                        e.stopPropagation()
+                        setMenuFor(menuFor === b.id ? null : b.id)
+                      }}
+                    >
+                      <Icon name="more" />
+                    </button>
+                    {menuFor === b.id && (
+                      <div className="book-menu" onClick={(e) => e.stopPropagation()}>
+                        <button
+                          onClick={() => {
+                            setMenuFor(null)
+                            setSendFor(b)
+                          }}
+                        >
+                          <Icon name="mail" /> Enviar a dispositivo
+                        </button>
+                        <button
+                          onClick={() => {
+                            setMenuFor(null)
+                            setConvertFor(b)
+                          }}
+                        >
+                          <Icon name="convert" /> Convertir formato
+                        </button>
+                        <button
+                          onClick={() => {
+                            setMenuFor(null)
+                            setPickerFor(b)
+                          }}
+                        >
+                          <Icon name="image" /> Cambiar portada
+                        </button>
+                        <button
+                          className="danger"
+                          onClick={() => {
+                            setMenuFor(null)
+                            remove(b)
+                          }}
+                        >
+                          × Quitar
+                        </button>
+                      </div>
+                    )}
+                  </div>
                 </div>
-              </div>
-            )
-          }}
-        />
-      )}
-
+              )
+            }}
+          />
+        )}
+      </div>
       {pickerFor && <CoverPicker book={pickerFor} onClose={() => setPickerFor(null)} />}
       {sendFor && <SendDialog book={sendFor} onClose={() => setSendFor(null)} />}
       {convertFor && <ConvertDialog book={convertFor} onClose={() => setConvertFor(null)} />}

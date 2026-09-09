@@ -207,12 +207,20 @@ kbd {
 }
 
 /* Library */
+/* The whole screen scrolls (scrollbar at the window edge); content is a centered column */
 .library {
-  padding: 32px 40px;
-  overflow-y: auto;
-  max-width: 1000px;
-  margin: 0 auto;
   width: 100%;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+.lib-content {
+  width: 100%;
+  max-width: 1440px;
+  margin: 0 auto;
+  padding: 28px 40px 40px;
+  display: flex;
+  flex-direction: column;
+  min-height: 100%;
 }
 .lib-header {
   display: flex;
@@ -730,7 +738,8 @@ kbd {
   outline: none;
   user-select: none;
   overflow: hidden;
-  margin: 0 -40px;
+  /* bleed to the window edges even when the content column is narrower than the window */
+  margin: 0 calc(50% - 50vw + 6px);
 }
 .coverflow-stage {
   position: absolute;
@@ -1432,7 +1441,7 @@ mark {
 
 /* Virtual list */
 .vlist {
-  height: calc(100vh - 430px);
+  height: calc(100vh - 420px);
   min-height: 240px;
   overflow-y: auto;
   position: relative;
@@ -2767,7 +2776,7 @@ h2,
 
 /* ---------- Responsive: tablets and narrow windows ---------- */
 @media (max-width: 900px) {
-  .library {
+  .lib-content {
     padding: 20px 16px;
   }
   .lib-header {
@@ -2851,7 +2860,7 @@ h2,
 
 /* ---------- Responsive: phones ---------- */
 @media (max-width: 640px) {
-  .library {
+  .lib-content {
     padding: 14px 12px;
   }
   .lib-header {
