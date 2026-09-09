@@ -2536,9 +2536,9 @@ input[type='radio'] {
   width: 16px;
   height: 16px;
 }
-input:not([type='range']):not([type='checkbox']):not([type='color']):not([type='radio']),
-textarea,
-select {
+:where(input:not([type='range']):not([type='checkbox']):not([type='color']):not([type='radio'])),
+:where(textarea),
+:where(select) {
   border-radius: 10px;
   border: 1px solid var(--sep);
   background: var(--bg2);
