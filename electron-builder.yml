@@ -43,3 +43,4 @@ publish:
   provider: github
   owner: intecklabs
   repo: xook
+  releaseType: release
