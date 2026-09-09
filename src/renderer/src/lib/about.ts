@@ -6,7 +6,7 @@ export const MEANING =
 export const AUTHOR = 'Inteck'
 export const LICENSE = 'GPL-3.0'
 export const DONATE_URL = ''
-export const REPO_URL = ''
+export const REPO_URL = 'https://github.com/intecklabs/xook'
 export const WEBSITE_URL = ''
 
 export const CREDITS: { name: string; what: string; url: string }[] = [

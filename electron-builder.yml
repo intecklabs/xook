@@ -41,5 +41,5 @@ npmRebuild: false
 # Actualizaciones automáticas desde GitHub Releases (cambia owner/repo si usas otro usuario)
 publish:
   provider: github
-  owner: inteckmx
+  owner: intecklabs
   repo: xook
