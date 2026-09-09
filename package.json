@@ -1,6 +1,6 @@
 {
   "name": "xook",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Xook: lector profesional de PDF y EPUB. Lectura rápida (RSVP y guía visual) con entrenamiento y control de comprensión, narrador con voces neuronales, modo libro tipo Kindle, diccionario y anotaciones, universos por autor, biblioteca de alto rendimiento, conversión de formatos y envío a Kindle.",
   "main": "./out/main/index.js",
   "author": "Inteck",
