@@ -189,14 +189,6 @@ function registerIpc(): void {
     db.updateBook(bookId, { universeId })
   )
   ipcMain.handle('db:ensureUniverse', (_e, author: string) => ensureUniverseForAuthor(author))
-  ipcMain.handle(
-    'db:indexForLetter',
-    (_e, by: 'title' | 'author', letter: string, universeId: string | null) =>
-      db.indexForLetter(by, letter, universeId)
-  )
-  ipcMain.handle('db:letters', (_e, by: 'title' | 'author', universeId: string | null) =>
-    db.lettersAvailable(by, universeId)
-  )
   ipcMain.handle('settings:get', () => db.getSetting(db.getDb(), 'settings'))
   ipcMain.handle('settings:set', (_e, value: unknown) =>
     db.setSetting(db.getDb(), 'settings', value)
