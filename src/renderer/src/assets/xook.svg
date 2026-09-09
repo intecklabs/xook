@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" width="1024" height="1024">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#2b3d8f"/>
+      <stop offset="1" stop-color="#0f7a8a"/>
+    </linearGradient>
+  </defs>
+  <rect width="1024" height="1024" rx="228" fill="url(#bg)"/>
+  <!-- lens / eye: reading -->
+  <path d="M176 512 A400 400 0 0 1 848 512 A400 400 0 0 1 176 512 Z"
+        fill="none" stroke="#ffffff" stroke-width="66" stroke-linejoin="round"/>
+  <!-- focus point (the RSVP pivot) -->
+  <circle cx="512" cy="512" r="96" fill="#fb923c"/>
+</svg>
