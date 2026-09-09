@@ -8,6 +8,8 @@ interface Props {
   ensure: (index: number) => void
   reset: number
   onOpen: (b: BookRow) => void
+  jump?: { index: number; n: number }
+  onActivity?: () => void
 }
 
 const BOOK_W = 124
@@ -18,7 +20,15 @@ const PAD = 28
 const PAGE = 60
 
 // Virtual bookshelf: only the visible rows are rendered, so it scales to any library size
-export default function ShelfView({ total, get, ensure, reset, onOpen }: Props): React.JSX.Element {
+export default function ShelfView({
+  total,
+  get,
+  ensure,
+  reset,
+  onOpen,
+  jump,
+  onActivity
+}: Props): React.JSX.Element {
   const ref = useRef<HTMLDivElement>(null)
   const [size, setSize] = useState({ w: 900, h: 560 })
   const [scrollTop, setScrollTop] = useState(0)
@@ -38,6 +48,12 @@ export default function ShelfView({ total, get, ensure, reset, onOpen }: Props):
   const rows = Math.ceil(total / cols)
   const first = Math.max(0, Math.floor(scrollTop / ROW_H) - 1)
   const last = Math.min(rows - 1, Math.ceil((scrollTop + size.h) / ROW_H) + 1)
+
+  useEffect(() => {
+    if (!jump || !ref.current) return
+    ref.current.scrollTo({ top: Math.floor(jump.index / cols) * ROW_H, behavior: 'smooth' })
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [jump])
 
   useEffect(() => {
     if (!total) return
@@ -77,7 +93,14 @@ export default function ShelfView({ total, get, ensure, reset, onOpen }: Props):
   }
 
   return (
-    <div className="shelf" ref={ref} onScroll={(e) => setScrollTop(e.currentTarget.scrollTop)}>
+    <div
+      className="shelf"
+      ref={ref}
+      onScroll={(e) => {
+        setScrollTop(e.currentTarget.scrollTop)
+        onActivity?.()
+      }}
+    >
       <div style={{ height: rows * ROW_H, position: 'relative' }}>{rowEls}</div>
     </div>
   )

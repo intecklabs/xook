@@ -208,6 +208,13 @@ const api = {
   ): Promise<number> => ipcRenderer.invoke('db:addSession', bookId, s),
   setQuizScore: (sessionId: number, score: number): Promise<void> =>
     ipcRenderer.invoke('db:setQuizScore', sessionId, score),
+  indexForLetter: (
+    by: 'title' | 'author',
+    letter: string,
+    universeId: string | null
+  ): Promise<number> => ipcRenderer.invoke('db:indexForLetter', by, letter, universeId),
+  letters: (by: 'title' | 'author', universeId: string | null): Promise<string[]> =>
+    ipcRenderer.invoke('db:letters', by, universeId),
   listUniverses: (
     q: string | undefined,
     offset: number,

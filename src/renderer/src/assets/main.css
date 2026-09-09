@@ -2826,8 +2826,61 @@ h2,
   width: var(--t);
   transform-origin: left center;
   transform: rotateY(90deg);
-  background: linear-gradient(to right, #17171a, #3a3a3e 55%, #26262a);
+  --spine: #3a3a3e;
+  background: linear-gradient(
+    to right,
+    color-mix(in srgb, var(--spine) 55%, black),
+    var(--spine) 40%,
+    color-mix(in srgb, var(--spine) 88%, white) 60%,
+    color-mix(in srgb, var(--spine) 70%, black)
+  );
   border-radius: 2px 0 0 2px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  box-shadow: inset 0 0 0 0.5px rgba(255, 255, 255, 0.12);
+}
+.book3d-spine-text {
+  writing-mode: vertical-rl;
+  transform: rotate(180deg);
+  max-height: 92%;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: rgba(255, 255, 255, 0.94);
+  font-family: var(--ui);
+  text-shadow: 0 1px 1px rgba(0, 0, 0, 0.45);
+  letter-spacing: 0.03em;
+  line-height: 1;
+}
+.book3d-spine-title {
+  font-size: calc(var(--t) * 0.46);
+  font-weight: 700;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-height: 100%;
+}
+.book3d-spine-author {
+  font-size: calc(var(--t) * 0.34);
+  font-weight: 400;
+  opacity: 0.85;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+/* gloss + hinge shadow: the cover reads as printed card, not a flat image */
+.book3d-front::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background:
+    linear-gradient(105deg, rgba(255, 255, 255, 0.16), rgba(255, 255, 255, 0) 38%),
+    linear-gradient(to right, rgba(0, 0, 0, 0.28), rgba(0, 0, 0, 0) 9%);
+  pointer-events: none;
 }
 .book3d-pages {
   position: absolute;
@@ -2916,6 +2969,97 @@ h2,
 :root[data-theme='dark'] .shelf-board,
 :root:not([data-theme]) .shelf-board {
   background: linear-gradient(180deg, #5a4535, #3f2e22 45%, #2b1e16);
+}
+/* ===== Índice A–Z ===== */
+.az {
+  position: absolute;
+  right: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 8;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 6px 4px;
+  border-radius: 14px;
+  background: var(--material);
+  backdrop-filter: saturate(180%) blur(16px);
+  -webkit-backdrop-filter: saturate(180%) blur(16px);
+  border: 1px solid var(--sep);
+  box-shadow: 0 10px 30px var(--shadow);
+  animation: az-in 0.18s ease-out;
+}
+@keyframes az-in {
+  from {
+    opacity: 0;
+    transform: translateY(-50%) translateX(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(-50%) translateX(0);
+  }
+}
+.az-head {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  margin-bottom: 4px;
+}
+.az-title {
+  font-size: 9px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--muted);
+}
+.az-pin {
+  width: 18px;
+  height: 18px;
+  padding: 0;
+  border-radius: 50%;
+  font-size: 12px;
+  line-height: 1;
+  background: transparent;
+  color: var(--muted);
+}
+.az-pin.active {
+  color: var(--accent);
+}
+.az-letters {
+  display: flex;
+  flex-direction: column;
+}
+.az-letter {
+  width: 22px;
+  height: 19px;
+  padding: 0;
+  border-radius: 6px;
+  background: transparent;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--accent);
+  line-height: 1;
+}
+.az-letter:hover:not(:disabled) {
+  background: var(--fill);
+}
+.az-letter.active {
+  background: var(--accent);
+  color: #fff;
+}
+.az-letter.dim {
+  color: var(--muted);
+  opacity: 0.45;
+}
+.az-toggle {
+  font-weight: 600;
+  letter-spacing: 0.04em;
+}
+.az-toggle.active {
+  background: var(--fill2);
+}
+.lib-content {
+  position: relative;
 }
 .sr-scope {
   display: flex;

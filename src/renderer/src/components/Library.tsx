@@ -5,6 +5,8 @@ import { estimateMinutes } from '../lib/text'
 import { useAllAnnotations, usePagedBooks, useStats } from '../hooks/useLibrary'
 import CoverFlow from './CoverFlow'
 import ShelfView from './ShelfView'
+import AlphabetIndex from './AlphabetIndex'
+import { useFastNav } from '../hooks/useFastNav'
 import CoverPicker from './CoverPicker'
 import CoverImage from './CoverImage'
 import UniversesView from './UniversesView'
@@ -43,6 +45,8 @@ export default function Library(): React.JSX.Element {
   const [sendFor, setSendFor] = useState<BookRow | null>(null)
   const [convertFor, setConvertFor] = useState<BookRow | null>(null)
   const [menuFor, setMenuFor] = useState<string | null>(null)
+  const [jump, setJump] = useState<{ index: number; n: number } | undefined>(undefined)
+  const fast = useFastNav()
 
   const paged = usePagedBooks({ sort })
   const index = Math.max(0, Math.min(rawIndex, Math.max(0, paged.total - 1)))
@@ -53,6 +57,22 @@ export default function Library(): React.JSX.Element {
     if (confirm(`¿Quitar "${b.title}" de la biblioteca?`)) void removeBook(b.id)
   }
   const openAt = (id: string, token?: number): void => void openBook(id, token)
+
+  // A–Z index: appears while browsing fast (or pinned); jumps by title/author
+  const azBy: 'title' | 'author' = sort === 'author' ? 'author' : 'title'
+  const showAz =
+    (tab === 'flow' || tab === 'shelf' || tab === 'list') &&
+    paged.total > 60 &&
+    (fast.pinned || fast.active)
+  const jumpTo = (i: number): void => {
+    if (sort !== 'title' && sort !== 'author') setSort('title')
+    setIndex(i)
+    setJump({ index: i, n: Date.now() })
+  }
+  const onIndexChange = (i: number): void => {
+    setIndex(i)
+    fast.bump()
+  }
 
   return (
     <div className="screen library" onMouseDown={() => setMenuFor(null)}>
@@ -131,6 +151,15 @@ export default function Library(): React.JSX.Element {
               Anotaciones
             </button>
           </div>
+          {(tab === 'flow' || tab === 'shelf' || tab === 'list') && paged.total > 60 && (
+            <button
+              className={`ghost az-toggle ${fast.pinned ? 'active' : ''}`}
+              title="Índice alfabético"
+              onClick={fast.togglePin}
+            >
+              A–Z
+            </button>
+          )}
           {(tab === 'flow' || tab === 'shelf' || tab === 'list') && paged.total > 1 && (
             <select
               className="lib-sort"
@@ -165,6 +194,8 @@ export default function Library(): React.JSX.Element {
             ensure={paged.ensure}
             reset={paged.reset}
             onOpen={(b) => void openBook(b.id)}
+            jump={jump}
+            onActivity={fast.bump}
           />
         ) : tab === 'flow' ? (
           <>
@@ -173,7 +204,7 @@ export default function Library(): React.JSX.Element {
               get={paged.get}
               ensure={paged.ensure}
               index={index}
-              onIndexChange={setIndex}
+              onIndexChange={onIndexChange}
               onOpen={(b) => void openBook(b.id)}
             />
             {selected && (
@@ -194,6 +225,8 @@ export default function Library(): React.JSX.Element {
             get={paged.get}
             ensure={paged.ensure}
             reset={paged.reset}
+            jump={jump}
+            onActivity={fast.bump}
             render={(b, i) => {
               const pct = Math.round((b.position / Math.max(b.totalWords, 1)) * 100)
               const wpm = b.avgWpm ?? settings.wpm
@@ -276,6 +309,9 @@ export default function Library(): React.JSX.Element {
             }}
           />
         )}
+        {showAz && (
+          <AlphabetIndex by={azBy} onJump={jumpTo} onPin={fast.togglePin} pinned={fast.pinned} />
+        )}
       </div>
       {pickerFor && <CoverPicker book={pickerFor} onClose={() => setPickerFor(null)} />}
       {sendFor && <SendDialog book={sendFor} onClose={() => setSendFor(null)} />}
@@ -289,16 +325,25 @@ function VirtualList({
   get,
   ensure,
   reset,
-  render
+  render,
+  jump,
+  onActivity
 }: {
   total: number
   get: (i: number) => BookRow | undefined
   ensure: (i: number) => void
   reset: number
   render: (b: BookRow, i: number) => React.JSX.Element
+  jump?: { index: number; n: number }
+  onActivity?: () => void
 }): React.JSX.Element {
   const ref = useRef<HTMLDivElement>(null)
   const [range, setRange] = useState({ start: 0, end: 20 })
+
+  useEffect(() => {
+    if (!jump || !ref.current) return
+    ref.current.scrollTo({ top: jump.index * ROW, behavior: 'smooth' })
+  }, [jump])
 
   const update = (): void => {
     const el = ref.current
@@ -332,7 +377,14 @@ function VirtualList({
     )
   }
   return (
-    <div className="vlist" ref={ref} onScroll={update}>
+    <div
+      className="vlist"
+      ref={ref}
+      onScroll={() => {
+        update()
+        onActivity?.()
+      }}
+    >
       <div style={{ height: total * ROW, position: 'relative' }}>{rows}</div>
     </div>
   )
