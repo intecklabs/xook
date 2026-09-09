@@ -2226,6 +2226,9 @@ mark {
   max-width: none;
   padding: 0;
 }
+.vp-scope[hidden] {
+  display: none;
+}
 .ss-body {
   overflow-x: hidden;
 }
