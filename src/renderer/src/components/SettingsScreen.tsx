@@ -47,8 +47,8 @@ function NarratorSection(): React.JSX.Element {
           {(
             [
               ['auto', 'Automático'],
-              ['neural', 'Neuronal (internet)'],
-              ['local', 'Local (Windows)']
+              ['neural', 'Neuronal'],
+              ['local', 'Windows']
             ] as const
           ).map(([id, label]) => (
             <button
@@ -61,8 +61,8 @@ function NarratorSection(): React.JSX.Element {
           ))}
         </div>
         <span className="hint">
-          Automático usa las voces neuronales y, si no hay internet o el servicio falla, cambia solo
-          a las voces instaladas en Windows.
+          Neuronal: voces de Microsoft por internet. Windows: voces instaladas en el equipo, sin
+          conexión. Automático usa las neuronales y cambia solo a las de Windows si fallan.
         </span>
       </label>
       <div className="ss-group">

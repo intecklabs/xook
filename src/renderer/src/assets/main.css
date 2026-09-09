@@ -2211,15 +2211,35 @@ mark {
 }
 
 /* Full settings screen */
-.ss {
-  width: min(960px, 94vw);
-  height: min(680px, 85vh);
-  max-height: 85vh;
+.overlay-card.ss {
+  width: min(1000px, 94vw);
+  max-width: none;
+  height: min(700px, 88vh);
+  max-height: 88vh;
   padding: 0;
   display: grid;
-  grid-template-columns: 220px 1fr;
+  grid-template-columns: 220px minmax(0, 1fr);
   grid-template-rows: minmax(0, 1fr);
   overflow: hidden;
+}
+.overlay-card.vp {
+  max-width: none;
+  padding: 0;
+}
+.ss-body {
+  overflow-x: hidden;
+}
+.ss-body .pill-tabs,
+.ss-body .seg {
+  flex-wrap: wrap;
+}
+.ss-body .book-aa.embedded .aa-row,
+.ss-body .mail-form .dlg-row {
+  flex-wrap: wrap;
+}
+.ss-body .book-aa.embedded .aa-row > :last-child,
+.ss-body .mail-form .dlg-row > :last-child {
+  margin-left: auto;
 }
 .ss-nav {
   border-right: 1px solid var(--border);
@@ -2954,11 +2974,11 @@ h2,
   .universe-main {
     padding: 8px 16px 24px;
   }
-  .ss {
+  .overlay-card.ss {
     width: 96vw;
     height: 92vh;
     max-height: 92vh;
-    grid-template-columns: 1fr;
+    grid-template-columns: minmax(0, 1fr);
     grid-template-rows: auto minmax(0, 1fr);
   }
   .ss-nav {
