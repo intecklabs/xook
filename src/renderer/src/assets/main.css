@@ -3022,8 +3022,10 @@ h2,
   background: transparent;
   color: var(--muted);
 }
-.az-pin.active {
-  color: var(--accent);
+.az-pin.active,
+.az-pin.active:hover:not(:disabled) {
+  background: var(--fill2);
+  color: var(--fg);
 }
 .az-letters {
   display: flex;
