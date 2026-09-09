@@ -751,8 +751,7 @@ kbd {
   cursor: pointer;
   border-radius: 4px;
   box-shadow: 0 18px 40px var(--shadow);
-  -webkit-box-reflect: below 6px
-    linear-gradient(to bottom, transparent 55%, rgba(0, 0, 0, 0.35));
+  -webkit-box-reflect: below 6px linear-gradient(to bottom, transparent 55%, rgba(0, 0, 0, 0.35));
 }
 .coverflow-item.center {
   box-shadow: 0 24px 60px var(--shadow);
@@ -1255,7 +1254,9 @@ kbd {
   border-radius: 999px;
   padding: 0 8px 0 14px;
   height: 44px;
-  transition: box-shadow 0.15s, border-color 0.15s;
+  transition:
+    box-shadow 0.15s,
+    border-color 0.15s;
 }
 .searchbox-input:focus-within {
   border-color: var(--accent);
@@ -2400,6 +2401,368 @@ mark {
   border-radius: 10px;
   z-index: 20;
   cursor: pointer;
+}
+
+/* ===== Apple HIG =====
+   Materiales translúcidos, controles segmentados, tipografía jerárquica,
+   separadores finos y barras de desplazamiento tipo macOS. */
+:root {
+  --bg: #151517;
+  --bg2: #1c1c1e;
+  --bg3: #2c2c2e;
+  --muted: #98989f;
+  --accent: #0a84ff;
+  --border: rgba(255, 255, 255, 0.1);
+  --sep: rgba(255, 255, 255, 0.1);
+  --fill: rgba(120, 120, 128, 0.24);
+  --fill2: rgba(120, 120, 128, 0.36);
+  --seg-on: #636366;
+  --material: rgba(28, 28, 30, 0.76);
+  --shadow: rgba(0, 0, 0, 0.5);
+}
+:root[data-theme='light'] {
+  --bg: #f2f2f7;
+  --bg2: #ffffff;
+  --bg3: #e5e5ea;
+  --muted: #6e6e73;
+  --accent: #007aff;
+  --border: rgba(0, 0, 0, 0.08);
+  --sep: rgba(0, 0, 0, 0.08);
+  --fill: rgba(120, 120, 128, 0.12);
+  --fill2: rgba(120, 120, 128, 0.2);
+  --seg-on: #ffffff;
+  --material: rgba(246, 246, 248, 0.78);
+  --shadow: rgba(0, 0, 0, 0.14);
+}
+:root[data-theme='sepia'] {
+  --border: rgba(60, 40, 10, 0.12);
+  --sep: rgba(60, 40, 10, 0.12);
+  --fill: rgba(120, 100, 70, 0.14);
+  --fill2: rgba(120, 100, 70, 0.24);
+  --seg-on: #fffaf0;
+  --material: rgba(250, 244, 228, 0.8);
+  --shadow: rgba(60, 40, 10, 0.18);
+}
+
+/* Barras de desplazamiento finas (macOS) */
+::-webkit-scrollbar {
+  width: 12px;
+  height: 12px;
+}
+::-webkit-scrollbar-track,
+::-webkit-scrollbar-corner {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(120, 120, 128, 0.38);
+  border-radius: 999px;
+  border: 3px solid transparent;
+  background-clip: padding-box;
+}
+::-webkit-scrollbar-thumb:hover {
+  background-color: rgba(120, 120, 128, 0.6);
+}
+
+/* Botones */
+button {
+  border-color: transparent;
+  background: var(--fill);
+  border-radius: 10px;
+  padding: 7px 14px;
+  font-weight: 500;
+  transition:
+    background 0.15s,
+    transform 0.08s,
+    opacity 0.15s;
+}
+button:hover:not(:disabled) {
+  border-color: transparent;
+  background: var(--fill2);
+}
+button:active:not(:disabled) {
+  transform: scale(0.97);
+}
+button.primary,
+button.primary:hover:not(:disabled) {
+  background: var(--accent);
+  border-color: transparent;
+  color: #fff;
+  font-weight: 600;
+}
+button.primary:hover:not(:disabled) {
+  filter: brightness(1.08);
+}
+button.ghost {
+  background: transparent;
+  color: var(--accent);
+}
+button.ghost:hover:not(:disabled) {
+  background: var(--fill);
+}
+button.ghost.danger,
+button.danger {
+  color: var(--accent2);
+}
+button.icon {
+  background: transparent;
+  color: var(--muted);
+  border-radius: 50%;
+  width: 30px;
+  height: 30px;
+  padding: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+button.icon:hover:not(:disabled) {
+  background: var(--fill);
+  color: var(--fg);
+}
+.icon-btn {
+  border-radius: 50%;
+  width: 36px;
+  height: 36px;
+}
+button:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3.5px color-mix(in srgb, var(--accent) 35%, transparent);
+}
+input[type='checkbox'],
+input[type='radio'] {
+  accent-color: var(--accent);
+  width: 16px;
+  height: 16px;
+}
+input:not([type='range']):not([type='checkbox']):not([type='color']):not([type='radio']),
+textarea,
+select {
+  border-radius: 10px;
+  border: 1px solid var(--sep);
+  background: var(--bg2);
+}
+
+/* Controles segmentados (iOS/macOS) */
+.seg,
+.pill-tabs,
+.mode-switch {
+  background: var(--fill);
+  border-radius: 9px;
+  padding: 2px;
+  gap: 2px;
+}
+.seg button,
+.pill-tabs button,
+.mode-switch button {
+  border: none;
+  background: transparent;
+  border-radius: 7px;
+  padding: 5px 12px;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--fg);
+}
+.seg button:hover:not(:disabled),
+.pill-tabs button:hover:not(:disabled),
+.mode-switch button:hover:not(:disabled) {
+  background: transparent;
+}
+.seg button.active,
+.pill-tabs button.active,
+.mode-switch button.active {
+  background: var(--seg-on);
+  color: var(--fg);
+  box-shadow:
+    0 1px 3px rgba(0, 0, 0, 0.18),
+    0 0 0 0.5px rgba(0, 0, 0, 0.04);
+}
+.seg.tiny button {
+  padding: 3px 8px;
+}
+.lib-tabs.seg button {
+  padding: 6px 14px;
+}
+
+/* Tipografía */
+.lib-header h1 {
+  font-size: 30px;
+  font-weight: 700;
+  letter-spacing: -0.022em;
+}
+.lib-header p {
+  font-size: 14px;
+}
+h2,
+.overlay-card h2,
+.ss-nav h2 {
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+.stat-value {
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+.stat-label,
+.hint,
+.small {
+  letter-spacing: 0.005em;
+}
+.book-details-title {
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+
+/* Superficies: esquinas continuas, separadores finos */
+.stat,
+.universe-card,
+.import-card,
+.ss-group,
+.settings fieldset,
+.settings-form fieldset,
+.vp-card,
+.format-card,
+.device {
+  border: 1px solid var(--sep);
+  border-radius: 14px;
+}
+.overlay-card,
+.book-aa,
+.popover {
+  border: 1px solid var(--sep);
+  border-radius: 16px;
+  box-shadow: 0 24px 64px var(--shadow);
+}
+.overlay {
+  background: rgba(0, 0, 0, 0.32);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+}
+.searchbox-input {
+  background: var(--fill);
+  border-color: transparent;
+  height: 40px;
+}
+.searchbox-input input,
+.dict-search input,
+.chip-add input,
+.universe-name-input {
+  background: transparent;
+  border: none;
+  box-shadow: none;
+}
+.searchbox-input input:focus-visible,
+.dict-search input:focus-visible,
+.chip-add input:focus-visible {
+  box-shadow: none;
+}
+.searchbox-input:focus-within {
+  background: var(--bg2);
+  border-color: transparent;
+}
+.lib-sort {
+  border-radius: 10px;
+}
+
+/* Sobre la atmósfera de un universo (fondo oscuro) los materiales son oscuros */
+.reader.immersive,
+.universe-screen {
+  --seg-on: rgba(255, 255, 255, 0.22);
+  --fill: rgba(255, 255, 255, 0.1);
+  --fill2: rgba(255, 255, 255, 0.18);
+  --sep: rgba(255, 255, 255, 0.12);
+  --material: rgba(18, 16, 20, 0.55);
+  --muted: rgba(255, 255, 255, 0.62);
+}
+.reader.immersive .mode-switch button,
+.universe-screen .pill-tabs button,
+.universe-screen .seg button {
+  color: #fff;
+}
+
+/* Barras de navegación translúcidas */
+.reader-header,
+.reader-footer,
+.guided-nav,
+.universe-header,
+.ss-head {
+  background: var(--material);
+  backdrop-filter: saturate(180%) blur(20px);
+  -webkit-backdrop-filter: saturate(180%) blur(20px);
+  border-color: var(--sep);
+}
+.reader-header {
+  min-height: 52px;
+  padding: 8px 12px;
+  gap: 8px;
+}
+.reader-header > button.ghost {
+  padding: 6px 10px;
+}
+.reader-title {
+  flex: 0 1 auto;
+  max-width: 28%;
+  font-weight: 600;
+  font-size: 13px;
+  color: var(--muted);
+}
+.mode-switch {
+  margin: 0 auto;
+}
+.reader-header > button.active {
+  background: var(--fill2);
+  color: var(--accent);
+}
+.settings,
+.settings-head {
+  border-color: var(--sep);
+}
+.ss-nav {
+  background: transparent;
+  border-color: var(--sep);
+}
+.ss-nav button {
+  font-weight: 500;
+}
+.ss-nav button.active {
+  background: var(--accent);
+  color: #fff;
+}
+.ss-nav button:hover:not(.active) {
+  background: var(--fill);
+}
+
+/* Cover Flow: flechas flotantes en los bordes */
+.coverflow-arrow {
+  width: 40px;
+  height: 40px;
+  background: var(--material);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid var(--sep);
+  box-shadow: 0 2px 10px var(--shadow);
+  color: var(--fg);
+  opacity: 0.9;
+}
+.coverflow-arrow:hover:not(:disabled) {
+  opacity: 1;
+  background: var(--bg2);
+}
+.coverflow-arrow.left {
+  left: 14px;
+}
+.coverflow-arrow.right {
+  right: 14px;
+}
+.coverflow-counter {
+  background: var(--material);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid var(--sep);
+  border-radius: 999px;
+  padding: 3px 10px;
+  bottom: 10px;
 }
 
 /* ---------- Responsive: tablets and narrow windows ---------- */
