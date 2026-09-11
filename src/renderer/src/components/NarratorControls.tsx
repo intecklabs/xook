@@ -113,7 +113,9 @@ export default function NarratorControls({
       </div>
       {state.error && <div className="small danger-text center">{state.error}</div>}
       {state.local && !state.error && (
-        <div className="hint center">Voz local de Windows (sin conexión)</div>
+        <div className="hint center">
+          {IS_MOBILE ? 'Voz del teléfono (sin conexión)' : 'Voz local de Windows (sin conexión)'}
+        </div>
       )}
 
       {exporting && (
