@@ -2,6 +2,8 @@ import { App } from '@capacitor/app'
 import { Browser } from '@capacitor/browser'
 import { StatusBar, Style } from '@capacitor/status-bar'
 import { FilePicker } from '@capawesome/capacitor-file-picker'
+import { TextToSpeech } from '@capacitor-community/text-to-speech'
+import { setLocalTts, type LocalSpeakRequest } from '../lib/localTts'
 import type {
   Api,
   AnnotationRow,
@@ -123,6 +125,53 @@ setCoverUrlProvider({
     return url
   }
 })
+
+// ---------- narrator: the Android WebView has no Web Speech API, use the system TTS engine ----------
+let speaking: LocalSpeakRequest | null = null
+let rangeListenerReady = false
+
+function installNativeTts(): void {
+  setLocalTts({
+    available: () => true,
+    cancel: () => {
+      speaking = null
+      void TextToSpeech.stop().catch(() => undefined)
+    },
+    speak: (req) => {
+      if (!rangeListenerReady) {
+        rangeListenerReady = true
+        void TextToSpeech.addListener('onRangeStart', (info) => {
+          speaking?.onBoundary(info.start)
+        })
+      }
+      speaking = req
+      void TextToSpeech.stop().catch(() => undefined)
+      TextToSpeech.speak({
+        text: req.text,
+        lang: req.lang,
+        rate: req.rate,
+        pitch: req.pitch,
+        volume: 1,
+        category: 'playback',
+        queueStrategy: 0
+      })
+        .then(() => {
+          if (speaking === req) {
+            speaking = null
+            req.onEnd()
+          }
+        })
+        .catch((e) => {
+          if (speaking === req) {
+            speaking = null
+            req.onError(
+              `No se pudo usar la voz del teléfono (${e instanceof Error ? e.message : String(e)})`
+            )
+          }
+        })
+    }
+  })
+}
 
 // ---------- events ----------
 const importListeners = new Set<(p: ImportProgress) => void>()
@@ -822,6 +871,7 @@ export async function installMobileApi(): Promise<void> {
   window.api = api
   document.documentElement.classList.add('mobile')
   if (IS_NATIVE) {
+    installNativeTts()
     void StatusBar.setOverlaysWebView({ overlay: false }).catch(() => undefined)
     void StatusBar.setBackgroundColor({ color: '#151517' }).catch(() => undefined)
     void StatusBar.setStyle({ style: Style.Dark }).catch(() => undefined)

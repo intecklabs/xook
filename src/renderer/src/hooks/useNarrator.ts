@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { alignWords, buildSegments, segmentAt, type Segment } from '../lib/narration'
 import type { NarratorEngine, Token, VoiceSettings } from '../lib/types'
+import { localTts } from '../lib/localTts'
 
 interface Loaded {
   url: string
@@ -16,24 +17,11 @@ export interface NarratorState {
   local: boolean
 }
 
-const localAvailable = (): boolean => typeof window.speechSynthesis !== 'undefined'
+const localAvailable = (): boolean => localTts.available()
 
 function localeOf(voiceId: string): string {
   const m = voiceId.match(/^([a-z]{2}-[A-Z]{2})/)
   return m ? m[1] : 'es-MX'
-}
-
-function pickLocalVoice(locale: string): SpeechSynthesisVoice | null {
-  const voices = window.speechSynthesis.getVoices()
-  const lang = locale.slice(0, 2)
-  const exact = voices.filter(
-    (v) => v.lang.replace('_', '-').toLowerCase() === locale.toLowerCase()
-  )
-  const same = voices.filter((v) => v.lang.toLowerCase().startsWith(lang))
-  const pool = exact.length ? exact : same.length ? same : voices
-  if (!pool.length) return null
-  // Prefer natural/neural voices if Windows has them installed
-  return pool.find((v) => /natural|neural|online/i.test(v.name)) ?? pool[0]
 }
 
 const clamp = (v: number, lo: number, hi: number): number => Math.max(lo, Math.min(hi, v))
@@ -129,8 +117,7 @@ export function useNarrator(
   const speakLocal = useCallback(
     (index: number, fromToken: number | undefined, gen: number) => {
       const seg = segments[index]
-      const synth = window.speechSynthesis
-      synth.cancel()
+      localTts.cancel()
       const from = fromToken !== undefined ? clamp(fromToken, seg.start, seg.end - 1) : seg.start
       const starts: number[] = []
       const words: string[] = []
@@ -141,46 +128,42 @@ export function useNarrator(
         words.push(w)
         pos += w.length + 1
       }
-      const u = new SpeechSynthesisUtterance(words.join(' '))
-      const locale = localeOf(voice.voice)
-      u.lang = locale
-      const v = pickLocalVoice(locale)
-      if (v) u.voice = v
-      u.rate = clamp(1 + rate / 100, 0.5, 2)
-      u.pitch = clamp(1 + voice.pitch / 50, 0.5, 2)
       tokenRef.current = from
       setToken(from)
       setLocal(true)
       setLoading(false)
-      u.onboundary = (e) => {
-        if (gen !== generation.current) return
-        if (e.name && e.name !== 'word') return
-        let idx = 0
-        while (idx + 1 < starts.length && starts[idx + 1] <= e.charIndex) idx++
-        const cur = from + idx
-        if (cur !== tokenRef.current) {
-          tokenRef.current = cur
-          setToken(cur)
-        }
-      }
-      u.onend = () => {
-        if (gen !== generation.current) return
-        onPosition(seg.end)
-        if (!playingRef.current) return
-        if (index + 1 < segments.length) void playSegmentRef.current(index + 1)
-        else {
+      localTts.speak({
+        text: words.join(' '),
+        lang: localeOf(voice.voice),
+        rate: clamp(1 + rate / 100, 0.5, 2),
+        pitch: clamp(1 + voice.pitch / 50, 0.5, 2),
+        onBoundary: (charIndex) => {
+          if (gen !== generation.current) return
+          let idx = 0
+          while (idx + 1 < starts.length && starts[idx + 1] <= charIndex) idx++
+          const cur = from + idx
+          if (cur !== tokenRef.current) {
+            tokenRef.current = cur
+            setToken(cur)
+          }
+        },
+        onEnd: () => {
+          if (gen !== generation.current) return
+          onPosition(seg.end)
+          if (!playingRef.current) return
+          if (index + 1 < segments.length) void playSegmentRef.current(index + 1)
+          else {
+            setPlaying(false)
+            playingRef.current = false
+          }
+        },
+        onError: (message) => {
+          if (gen !== generation.current) return
+          setError(message)
           setPlaying(false)
           playingRef.current = false
         }
-      }
-      u.onerror = (e) => {
-        if (gen !== generation.current) return
-        if (e.error === 'interrupted' || e.error === 'canceled') return
-        setError('No se pudo usar la voz local de Windows')
-        setPlaying(false)
-        playingRef.current = false
-      }
-      synth.speak(u)
+      })
     },
     [segments, tokens, voice.voice, voice.pitch, rate, onPosition]
   )
@@ -294,7 +277,7 @@ export function useNarrator(
     setPlaying(false)
     generation.current++
     audioRef.current?.pause()
-    if (localAvailable()) window.speechSynthesis.cancel()
+    if (localAvailable()) localTts.cancel()
     onPosition(tokenRef.current)
   }, [onPosition])
 
@@ -349,7 +332,7 @@ export function useNarrator(
     playingRef.current = false
     generation.current++
     audioRef.current?.pause()
-    if (localAvailable()) window.speechSynthesis.cancel()
+    if (localAvailable()) localTts.cancel()
     const id = setTimeout(() => setPlaying(false), 0)
     return () => clearTimeout(id)
   }, [enabled])
@@ -377,10 +360,10 @@ export function useNarrator(
   useEffect(() => {
     const cacheMap = cache.current
     // warm the local voice list (Chromium fills it asynchronously)
-    if (localAvailable()) window.speechSynthesis.getVoices()
+    if (localAvailable()) localTts.warmUp?.()
     return () => {
       audioRef.current?.pause()
-      if (localAvailable()) window.speechSynthesis.cancel()
+      if (localAvailable()) localTts.cancel()
       for (const l of cacheMap.values()) URL.revokeObjectURL(l.url)
       cacheMap.clear()
     }
