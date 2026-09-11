@@ -831,15 +831,13 @@ export async function installMobileApi(): Promise<void> {
     })
   }
   window.addEventListener('beforeunload', () => void db.flush())
-  if (import.meta.env.DEV) {
-    // Browser testing: window.__xookImport('libro.epub', blob) bypasses the native file picker
-    ;(window as unknown as { __xookImport: unknown }).__xookImport = async (
-      name: string,
-      blob: Blob
-    ): Promise<ImportProgress> => {
-      const h = `picked:${makeId()}`
-      picked.set(h, { name, blob, size: blob.size })
-      return startImport([h])
-    }
+  // Testing/automation hook: window.__xookImport('libro.epub', blob) bypasses the native file picker
+  ;(window as unknown as { __xookImport: unknown }).__xookImport = async (
+    name: string,
+    blob: Blob
+  ): Promise<ImportProgress> => {
+    const h = `picked:${makeId()}`
+    picked.set(h, { name, blob, size: blob.size })
+    return startImport([h])
   }
 }
