@@ -1,6 +1,6 @@
 import { App } from '@capacitor/app'
 import { Browser } from '@capacitor/browser'
-import { StatusBar } from '@capacitor/status-bar'
+import { StatusBar, Style } from '@capacitor/status-bar'
 import { FilePicker } from '@capawesome/capacitor-file-picker'
 import type {
   Api,
@@ -822,6 +822,9 @@ export async function installMobileApi(): Promise<void> {
   window.api = api
   document.documentElement.classList.add('mobile')
   if (IS_NATIVE) {
+    void StatusBar.setOverlaysWebView({ overlay: false }).catch(() => undefined)
+    void StatusBar.setBackgroundColor({ color: '#151517' }).catch(() => undefined)
+    void StatusBar.setStyle({ style: Style.Dark }).catch(() => undefined)
     void App.addListener('pause', () => void db.flush())
     void App.addListener('backButton', ({ canGoBack }) => {
       // Let the UI close overlays first; if nothing consumed it, minimise like a native app
