@@ -53,6 +53,17 @@ export default function CoverFlow({
     return () => window.removeEventListener('keydown', onKey)
   }, [index, total, clamp, get, onIndexChange, onOpen])
 
+  const touchX = useRef<number | null>(null)
+  const onTouchStart = (e: React.TouchEvent): void => {
+    touchX.current = e.touches[0].clientX
+  }
+  const onTouchEnd = (e: React.TouchEvent): void => {
+    if (touchX.current === null) return
+    const dx = e.changedTouches[0].clientX - touchX.current
+    touchX.current = null
+    if (Math.abs(dx) > 40) onIndexChange(clamp(index + (dx < 0 ? 1 : -1)))
+  }
+
   const onWheel = (e: React.WheelEvent): void => {
     if (e.ctrlKey) return
     const now = Date.now()
@@ -95,7 +106,13 @@ export default function CoverFlow({
   }
 
   return (
-    <div className="coverflow" onWheel={onWheel} tabIndex={0}>
+    <div
+      className="coverflow"
+      onWheel={onWheel}
+      onTouchStart={onTouchStart}
+      onTouchEnd={onTouchEnd}
+      tabIndex={0}
+    >
       <div className="coverflow-stage">{items}</div>
       {total > 1 && (
         <>

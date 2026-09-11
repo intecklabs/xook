@@ -5,6 +5,7 @@ import type { Narrator } from '../hooks/useNarrator'
 import type { VoiceSettings } from '../lib/types'
 import { voiceLabel } from '../lib/voices'
 import Icon from './Icon'
+import { IS_MOBILE } from '../lib/platform'
 
 const SPEEDS = [0.8, 0.9, 1, 1.1, 1.25, 1.5]
 
@@ -86,9 +87,11 @@ export default function NarratorControls({
           <Icon name="skip-forward" />
         </button>
 
-        <button className="ghost voice-btn" onClick={onOpenVoices} title="Elegir narrador">
-          <Icon name="mic" /> {voiceLabel(voice.voice)}
-        </button>
+        {!IS_MOBILE && (
+          <button className="ghost voice-btn" onClick={onOpenVoices} title="Elegir narrador">
+            <Icon name="mic" /> {voiceLabel(voice.voice)}
+          </button>
+        )}
 
         <div className="seg tiny speed-seg" title="Velocidad">
           {SPEEDS.map((sp) => (
@@ -102,9 +105,11 @@ export default function NarratorControls({
           ))}
         </div>
 
-        <button className="ghost" onClick={() => void exportAudiobook()} disabled={!!exporting}>
-          <Icon name="download" /> Audiolibro
-        </button>
+        {!IS_MOBILE && (
+          <button className="ghost" onClick={() => void exportAudiobook()} disabled={!!exporting}>
+            <Icon name="download" /> Audiolibro
+          </button>
+        )}
       </div>
       {state.error && <div className="small danger-text center">{state.error}</div>}
       {state.local && !state.error && (

@@ -12,6 +12,7 @@ import SearchBox from './SearchBox'
 import SendDialog from './SendDialog'
 import ConvertDialog from './ConvertDialog'
 import Icon from './Icon'
+import { IS_MOBILE } from '../lib/platform'
 
 type Tab = 'flow' | 'shelf' | 'universes' | 'list' | 'notes'
 type Sort = 'recent' | 'added' | 'title' | 'author' | 'progress'
@@ -76,13 +77,15 @@ export default function Library(): React.JSX.Element {
             <button className="ghost icon-btn" title="Configuración" onClick={() => openSettings()}>
               <Icon name="sliders" size={18} />
             </button>
-            <button
-              className="ghost"
-              onClick={() => void importPick('folder')}
-              title="Importa todos los PDF y EPUB de una carpeta (y subcarpetas)"
-            >
-              <Icon name="folder" /> Importar carpeta
-            </button>
+            {!IS_MOBILE && (
+              <button
+                className="ghost"
+                onClick={() => void importPick('folder')}
+                title="Importa todos los PDF y EPUB de una carpeta (y subcarpetas)"
+              >
+                <Icon name="folder" /> Importar carpeta
+              </button>
+            )}
             <button className="primary" onClick={() => void importPick('files')}>
               <Icon name="plus" /> Abrir libros
             </button>
@@ -235,22 +238,26 @@ export default function Library(): React.JSX.Element {
                     </button>
                     {menuFor === b.id && (
                       <div className="book-menu" onClick={(e) => e.stopPropagation()}>
-                        <button
-                          onClick={() => {
-                            setMenuFor(null)
-                            setSendFor(b)
-                          }}
-                        >
-                          <Icon name="mail" /> Enviar a dispositivo
-                        </button>
-                        <button
-                          onClick={() => {
-                            setMenuFor(null)
-                            setConvertFor(b)
-                          }}
-                        >
-                          <Icon name="convert" /> Convertir formato
-                        </button>
+                        {!IS_MOBILE && (
+                          <>
+                            <button
+                              onClick={() => {
+                                setMenuFor(null)
+                                setSendFor(b)
+                              }}
+                            >
+                              <Icon name="mail" /> Enviar a dispositivo
+                            </button>
+                            <button
+                              onClick={() => {
+                                setMenuFor(null)
+                                setConvertFor(b)
+                              }}
+                            >
+                              <Icon name="convert" /> Convertir formato
+                            </button>
+                          </>
+                        )}
                         <button
                           onClick={() => {
                             setMenuFor(null)
@@ -378,12 +385,16 @@ function BookDetails({
         <button className="primary" onClick={onOpen}>
           {book.position > 0 ? 'Continuar leyendo' : 'Empezar a leer'}
         </button>
-        <button className="ghost" onClick={onSend} title="Enviar a Kindle, móvil o USB">
-          <Icon name="mail" /> Enviar
-        </button>
-        <button className="ghost" onClick={onConvert} title="Convertir a otro formato">
-          <Icon name="convert" /> Convertir
-        </button>
+        {!IS_MOBILE && (
+          <>
+            <button className="ghost" onClick={onSend} title="Enviar a Kindle, móvil o USB">
+              <Icon name="mail" /> Enviar
+            </button>
+            <button className="ghost" onClick={onConvert} title="Convertir a otro formato">
+              <Icon name="convert" /> Convertir
+            </button>
+          </>
+        )}
         <button className="ghost" onClick={onCover}>
           Portada
         </button>

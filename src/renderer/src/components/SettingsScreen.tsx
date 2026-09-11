@@ -14,13 +14,14 @@ import {
 } from '../lib/about'
 import logo from '../assets/xook.svg'
 import Icon from './Icon'
+import { IS_MOBILE } from '../lib/platform'
 import ReadingSettings from './ReadingSettings'
 import BookAppearance from './BookAppearance'
 import MailForm from './MailForm'
 import VoicePicker from './VoicePicker'
 import { DataDirRow, DictLangRow, IndexRow, ThemeRow } from './SettingsRows'
 
-const SECTIONS: { id: SettingsSection; label: string; icon: string }[] = [
+const ALL_SECTIONS: { id: SettingsSection; label: string; icon: string }[] = [
   { id: 'general', label: 'General', icon: 'sliders' },
   { id: 'reading', label: 'Lectura', icon: 'book-open' },
   { id: 'book', label: 'Modo libro', icon: 'book' },
@@ -28,6 +29,8 @@ const SECTIONS: { id: SettingsSection; label: string; icon: string }[] = [
   { id: 'mail', label: 'Correo y Kindle', icon: 'mail' },
   { id: 'about', label: 'Acerca de', icon: 'sparkles' }
 ]
+
+const SECTIONS = IS_MOBILE ? ALL_SECTIONS.filter((s) => s.id !== 'mail') : ALL_SECTIONS
 
 const SPEEDS = [0.8, 0.9, 1, 1.1, 1.25, 1.5]
 const SAMPLE =
@@ -39,6 +42,30 @@ function NarratorSection(): React.JSX.Element {
   const engine = useStore((s) => s.settings.narratorEngine)
   const update = useStore((s) => s.updateSettings)
   const [picking, setPicking] = useState(false)
+  if (IS_MOBILE) {
+    return (
+      <>
+        <label>
+          Velocidad de narración
+          <div className="seg">
+            {SPEEDS.map((sp) => (
+              <button
+                key={sp}
+                className={speed === sp ? 'active' : ''}
+                onClick={() => update({ narratorSpeed: sp })}
+              >
+                {sp}×
+              </button>
+            ))}
+          </div>
+        </label>
+        <div className="hint">
+          El narrador usa las voces instaladas en tu teléfono (Ajustes del sistema → Salida de voz).
+          Instala una voz «natural» de Google para mejor calidad.
+        </div>
+      </>
+    )
+  }
   return (
     <>
       <label>
@@ -236,7 +263,7 @@ export default function SettingsScreen({
               <>
                 <ThemeRow />
                 <DictLangRow />
-                <DataDirRow />
+                {!IS_MOBILE && <DataDirRow />}
                 <IndexRow />
               </>
             )}

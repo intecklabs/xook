@@ -210,6 +210,24 @@ export default function BookView({
     }
   }
 
+  // Phones: swipe horizontally to turn the page
+  const touchStart = useRef<{ x: number; y: number; t: number } | null>(null)
+  const onTouchStart = (e: React.TouchEvent): void => {
+    const t = e.touches[0]
+    touchStart.current = { x: t.clientX, y: t.clientY, t: Date.now() }
+  }
+  const onTouchEnd = (e: React.TouchEvent): void => {
+    const s0 = touchStart.current
+    touchStart.current = null
+    if (!s0) return
+    const t = e.changedTouches[0]
+    const dx = t.clientX - s0.x
+    const dy = t.clientY - s0.y
+    if (Math.abs(dx) > 48 && Math.abs(dx) > Math.abs(dy) * 1.5 && Date.now() - s0.t < 700) {
+      if (window.getSelection()?.isCollapsed !== false) turn(dx < 0 ? 1 : -1)
+    }
+  }
+
   const relativePoint = (rect: DOMRect): { x: number; y: number; yTop: number } => {
     const main = viewportRef.current?.parentElement?.getBoundingClientRect()
     return {
@@ -287,6 +305,8 @@ export default function BookView({
       ref={viewportRef}
       onMouseUp={handleMouseUp}
       onWheel={onWheel}
+      onTouchStart={onTouchStart}
+      onTouchEnd={onTouchEnd}
       style={{
         padding: `${Math.max(64, Math.round(margin * 0.8))}px ${margin}px ${Math.max(40, Math.round(margin * 0.6))}px`,
         fontFamily: BOOK_FONTS[appearance.font].css,

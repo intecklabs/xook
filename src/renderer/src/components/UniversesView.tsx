@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { useStore } from '../store'
 import { useUniverses } from '../hooks/useLibrary'
-import Atmosphere from './Atmosphere'
+import { SampleCover, UniverseArt } from './CoverUrls'
 import Icon from './Icon'
 
 export default function UniversesView(): React.JSX.Element {
@@ -58,9 +58,10 @@ export default function UniversesView(): React.JSX.Element {
         <div className="universe-grid">
           {rows.map((u) => (
             <button key={u.id} className="universe-card" onClick={() => void openUniverse(u.id)}>
-              <Atmosphere
+              <UniverseArt
+                id={u.id}
                 theme={u.theme}
-                image={u.theme.hasImage ? `cover://universe/${u.id}` : undefined}
+                hasImage={!!u.theme.hasImage}
                 intensity={0.5}
                 animate={false}
               />
@@ -76,7 +77,7 @@ export default function UniversesView(): React.JSX.Element {
                 <div className="universe-card-covers">
                   {u.sampleIds.map((id) => (
                     <div key={id} className="universe-card-cover">
-                      <img src={`cover://book/${id}`} alt="" loading="lazy" draggable={false} />
+                      <SampleCover id={id} />
                     </div>
                   ))}
                 </div>

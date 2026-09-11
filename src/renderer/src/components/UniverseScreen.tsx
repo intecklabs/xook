@@ -12,6 +12,7 @@ import SearchBox from './SearchBox'
 import SendDialog from './SendDialog'
 import ConvertDialog from './ConvertDialog'
 import Icon from './Icon'
+import { IS_MOBILE, useCoverUrl } from '../lib/platform'
 
 export default function UniverseScreen({ universe }: { universe: Universe }): React.JSX.Element {
   const hasImage = useStore((s) => s.activeUniverseImage)
@@ -37,6 +38,7 @@ export default function UniverseScreen({ universe }: { universe: Universe }): Re
   const [sendFor, setSendFor] = useState<BookRow | null>(null)
   const [convertFor, setConvertFor] = useState<BookRow | null>(null)
 
+  const universeImg = useCoverUrl('universe', universe.id, imgVer)
   const mine = useBooks({ universeId: universe.id, sort: 'recent', limit: 300 })
   const candidates = useBooks({ q: assignQuery, limit: 30 })
   const index = Math.max(0, Math.min(rawIndex, Math.max(0, mine.rows.length - 1)))
@@ -65,7 +67,7 @@ export default function UniverseScreen({ universe }: { universe: Universe }): Re
     >
       <Atmosphere
         theme={universe.theme}
-        image={hasImage ? `cover://universe/${universe.id}?v=${imgVer}` : undefined}
+        image={hasImage ? universeImg : undefined}
         className="universe-bg"
       />
 
@@ -312,12 +314,16 @@ export default function UniverseScreen({ universe }: { universe: Universe }): Re
                   <button className="primary" onClick={() => void openBook(selected.id)}>
                     {selected.position > 0 ? 'Continuar leyendo' : 'Empezar a leer'}
                   </button>
-                  <button className="ghost" onClick={() => setSendFor(selected)}>
-                    <Icon name="mail" /> Enviar
-                  </button>
-                  <button className="ghost" onClick={() => setConvertFor(selected)}>
-                    <Icon name="convert" /> Convertir
-                  </button>
+                  {!IS_MOBILE && (
+                    <>
+                      <button className="ghost" onClick={() => setSendFor(selected)}>
+                        <Icon name="mail" /> Enviar
+                      </button>
+                      <button className="ghost" onClick={() => setConvertFor(selected)}>
+                        <Icon name="convert" /> Convertir
+                      </button>
+                    </>
+                  )}
                   <button className="ghost" onClick={() => setPickerFor(selected)}>
                     Portada
                   </button>

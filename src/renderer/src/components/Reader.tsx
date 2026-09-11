@@ -17,6 +17,7 @@ import SelectionPopover from './SelectionPopover'
 import Quiz from './Quiz'
 import Atmosphere from './Atmosphere'
 import Icon from './Icon'
+import { useCoverUrl } from '../lib/platform'
 import { estimateMinutes, formatDuration } from '../lib/text'
 import { detectLanguage, suggestVoice } from '../lib/voices'
 import type { TextSelection } from '../lib/selection'
@@ -43,11 +44,11 @@ export default function Reader(): React.JSX.Element {
   const narratorEngine = useStore((s) => s.settings.narratorEngine)
   const wpmSetting = useStore((s) => s.settings.wpm)
   const universe = useStore((s) => s.currentUniverse ?? undefined)
-  const universeImage = useStore((s) =>
-    s.currentUniverse && s.currentUniverseImage
-      ? `cover://universe/${s.currentUniverse.id}`
-      : undefined
+  const universeImageId = useStore((s) =>
+    s.currentUniverse && s.currentUniverseImage ? s.currentUniverse.id : null
   )
+  const universeImageUrl = useCoverUrl('universe', universeImageId ?? '')
+  const universeImage = universeImageId ? universeImageUrl : undefined
   const isBook = mode === 'book'
   const showAtmosphere = immersive && !!universe && !isBook
 

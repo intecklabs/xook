@@ -20,7 +20,7 @@ const BLOCK_TAGS = new Set([
   'pre'
 ])
 
-function resolvePath(base: string, rel: string): string {
+export function resolvePath(base: string, rel: string): string {
   if (rel.startsWith('/')) return rel.slice(1)
   const parts = base.split('/').slice(0, -1)
   for (const seg of rel.split('/')) {
@@ -70,7 +70,7 @@ export interface CoverImage {
   mime: string
 }
 
-async function extractCover(
+export async function extractCover(
   zip: JSZip,
   opf: Document,
   opfPath: string,

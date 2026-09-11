@@ -5,3 +5,11 @@ out
 .eslintcache
 *.log*
 samples/
+www
+android/app/build
+android/build
+android/.gradle
+android/local.properties
+android/.idea
+*.keystore
+*.jks

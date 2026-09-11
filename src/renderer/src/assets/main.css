@@ -3196,3 +3196,38 @@ h2,
     min-height: 34px;
   }
 }
+
+/* ===== Móvil (Capacitor) ===== */
+html.mobile body {
+  -webkit-tap-highlight-color: transparent;
+  overscroll-behavior: none;
+}
+html.mobile .lib-content {
+  padding-top: calc(16px + env(safe-area-inset-top));
+  padding-bottom: calc(24px + env(safe-area-inset-bottom));
+}
+html.mobile .reader-header {
+  padding-top: calc(8px + env(safe-area-inset-top));
+}
+html.mobile .reader-footer {
+  padding-bottom: calc(12px + env(safe-area-inset-bottom));
+}
+html.mobile .coverflow,
+html.mobile .shelf,
+html.mobile .book-view,
+html.mobile .rsvp,
+html.mobile .guided {
+  touch-action: pan-y;
+}
+html.mobile button,
+html.mobile .pill-tabs button,
+html.mobile .seg button {
+  min-height: 40px;
+}
+html.mobile .book-menu button {
+  min-height: 44px;
+}
+html.mobile ::-webkit-scrollbar {
+  width: 4px;
+  height: 4px;
+}

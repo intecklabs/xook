@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import BookCover from './BookCover'
 import { renderPdfCover } from '../lib/parsers/pdf'
+import { useCoverUrl } from '../lib/platform'
 
 export interface CoverBook {
   id: string
@@ -49,6 +50,7 @@ export default function CoverImage({
   const [failed, setFailed] = useState(false)
   const ref = useRef<HTMLDivElement>(null)
   const [visible, setVisible] = useState(!lazy)
+  const url = useCoverUrl('book', book.id, version)
 
   useEffect(() => {
     if (!lazy || visible) return
@@ -91,13 +93,13 @@ export default function CoverImage({
     })
   }, [visible, has, book.id, book.format, book.path, book.coverSource, book.coverTriedAt])
 
-  const show = (has || version > 0) && !failed
+  const show = (has || version > 0) && !failed && !!url
   return (
     <div ref={ref} className={`cover-box ${className}`}>
       {show ? (
         <img
           className="cover-img"
-          src={`cover://book/${book.id}?v=${version}`}
+          src={url}
           alt={book.title}
           draggable={false}
           loading="lazy"
